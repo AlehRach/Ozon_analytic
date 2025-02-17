@@ -10,13 +10,19 @@ from google.oauth2 import service_account
 import concurrent.futures
 from Trigger_fbo import get_trigger_orders
 
+import streamlit as st
+import json
+
 def get_trigger_list(my_keys):
     # Авторизация
+    # Получение секрета из Streamlit
+    google_secrets = st.secrets["google"]
+    SERVICE_ACCOUNT_JSON = google_secrets["SERVICE_ACCOUNT_FILE"]
+    credentials_dict = json.loads(SERVICE_ACCOUNT_JSON)
     SCOPES = ["https://www.googleapis.com/auth/drive"]
-    SERVICE_ACCOUNT_FILE = r"C:\Users\user\GoogleConsole\glassy-clock-416407-49363ae55637.json"
 
     credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+        credentials_dict, scopes=SCOPES
     )
     drive_service = build("drive", "v3", credentials=credentials)
     FOLDER_ID = '1RdrpiKMbhNacsrs6kZCxpsSwphbzhUW7'
