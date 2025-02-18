@@ -17,9 +17,11 @@ def get_trigger_list(my_keys):
     # Авторизация
     # Получение секрета из Streamlit
     google_secrets = st.secrets["google"]
+    # Преобразуем в строку JSON
+    service_account_json = json.dumps(dict(google_secrets))
     # Записываем их в файл
     with open("service_account.json", "w") as f:
-        f.write(google_secrets)
+        f.write(service_account_json)
     SERVICE_ACCOUNT_FILE = "service_account.json"
     SCOPES = ["https://www.googleapis.com/auth/drive"]
 
