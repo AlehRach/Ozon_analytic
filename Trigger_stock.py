@@ -19,8 +19,8 @@ def get_trigger_list(my_keys):
 
     SCOPES = ["https://www.googleapis.com/auth/drive"]
 
-    credentials = service_account.Credentials.from_service_account_file(
-        google_secrets, scopes=SCOPES
+    credentials = service_account.Credentials.from_service_account_info(
+        dict(google_secrets), scopes=SCOPES
     )
     drive_service = build("drive", "v3", credentials=credentials)
     FOLDER_ID = '1RdrpiKMbhNacsrs6kZCxpsSwphbzhUW7'
