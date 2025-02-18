@@ -15,8 +15,8 @@ import json
 
 def get_trigger_list(my_keys):
     # Авторизация
-   # Преобразуем данные из secrets в словарь
-    google_secrets = json.loads(st.secrets["google"].get("SERVICE_ACCOUNT_FILE"))
+    # Получаем секреты в виде словаря
+    google_secrets = dict(st.secrets["google"]) 
     # Записываем их в файл
     with open("service_account.json", "w") as f:
         json.dump(google_secrets, f)
