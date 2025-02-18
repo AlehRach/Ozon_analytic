@@ -11,21 +11,16 @@ import concurrent.futures
 from Trigger_fbo import get_trigger_orders
 
 import streamlit as st
-import json
 
 def get_trigger_list(my_keys):
     # Авторизация
    # Получаем секреты из Streamlit
     google_secrets = st.secrets["google"]
-    google_secrets_str = json.dumps(dict(google_secrets))
-    # Записываем их в файл
-    with open("service_account.json", "w") as f:
-        f.write(google_secrets_str)
-    SERVICE_ACCOUNT_FILE = "service_account.json"
+
     SCOPES = ["https://www.googleapis.com/auth/drive"]
 
     credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES
+        google_secrets, scopes=SCOPES
     )
     drive_service = build("drive", "v3", credentials=credentials)
     FOLDER_ID = '1RdrpiKMbhNacsrs6kZCxpsSwphbzhUW7'
