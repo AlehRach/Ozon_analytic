@@ -10,8 +10,8 @@ st.title("Ozon Data Dashboard")
 my_keys = {}
 my_keys['client_id_Gr'] = st.text_input("Enter your Ozon client_id_Gr", type="password", key='client_id_Gr')
 my_keys['api_key_Gr'] = st.text_input("Enter your Ozon api_key_Gr", type="password", key='api_key_Gr')
-my_keys['client_id_Bt'] = st.text_input("Enter your Ozon client_id_Gr", type="password", key='client_id_Bt')
-my_keys['api_key_Bt'] = st.text_input("Enter your Ozon api_key_Gr", type="password", key='api_key_Bt')
+my_keys['client_id_Bt'] = st.text_input("Enter your Ozon client_id_Bt", type="password", key='client_id_Bt')
+my_keys['api_key_Bt'] = st.text_input("Enter your Ozon api_key_Bt", type="password", key='api_key_Bt')
 if st.button("Fetch and Process Data"):
     try:
         result = get_trigger_list(my_keys)
