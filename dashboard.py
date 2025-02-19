@@ -5,7 +5,8 @@ import plotly.express as px
 
 from Trigger_stock import get_trigger_list
 
-st.title("Ozon Data Dashboard")
+st.set_page_config(layout="wide")
+#st.title("Ozon Data Dashboard")
 # Используем session_state для управления видимостью блока ввода ключей
 if "keys_entered" not in st.session_state:
     st.session_state.keys_entered = False  # По умолчанию показываем форму
