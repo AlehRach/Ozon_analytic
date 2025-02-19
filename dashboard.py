@@ -6,28 +6,53 @@ import plotly.express as px
 from Trigger_stock import get_trigger_list
 
 st.title("Ozon Data Dashboard")
-# Input for API key
-my_keys = {}
-my_keys['client_id_Gr'] = st.text_input("Enter your Ozon client_id_Gr", type="password", key='client_id_Gr')
-my_keys['api_key_Gr'] = st.text_input("Enter your Ozon api_key_Gr", type="password", key='api_key_Gr')
-my_keys['client_id_Bt'] = st.text_input("Enter your Ozon client_id_Bt", type="password", key='client_id_Bt')
-my_keys['api_key_Bt'] = st.text_input("Enter your Ozon api_key_Bt", type="password", key='api_key_Bt')
-if st.button("Fetch and Process Data"):
-    try:
-        result = get_trigger_list(my_keys)
+# Используем session_state для управления видимостью блока ввода ключей
+if "keys_entered" not in st.session_state:
+    st.session_state.keys_entered = False  # По умолчанию показываем форму
+# Блок ввода ключей (показывается только если keys_entered == False)
+if not st.session_state.keys_entered:
+    st.subheader("Введите API-ключи Ozon")
+    # Input for API key
+    my_keys = {}
+    my_keys['client_id_Gr'] = st.text_input("Ваш Ozon client_id_Gr", type="password", key='client_id_Gr')
+    my_keys['api_key_Gr'] = st.text_input("Ваш Ozon api_key_Gr", type="password", key='api_key_Gr')
+    my_keys['client_id_Bt'] = st.text_input("Ваш Ozon client_id_Bt", type="password", key='client_id_Bt')
+    my_keys['api_key_Bt'] = st.text_input("Ваш Ozon api_key_Bt", type="password", key='api_key_Bt')
 
-# Проверяем, является ли результат ошибкой (строкой)
-        if isinstance(result, str):
-            st.error(result)  # Выводим ошибку в UI
-            df_details, df, combined_list = None, None, None  # Устанавливаем None, чтобы избежать ошибок
+    if st.button("Сохранить ключи и продолжить"):
+        if all(my_keys.values()):  # Проверяем, что все ключи введены
+            st.session_state.keys_entered = True  # Скрываем форму
+            st.session_state.my_keys = my_keys  # Сохраняем ключи
+            st.experimental_rerun()
         else:
-            df_details, df, combined_list = result
+            st.warning("Введите все ключи!")
 
-        st.session_state.df_details = df_details
-        st.session_state.df = df
-        st.session_state.fig = None  # Очистка старого графика
-    except Exception as e:
-        st.error(f'error Trigger {e}')
+# Если ключи введены, показываем основную часть дашборда
+if st.session_state.keys_entered:
+    col1, col2 = st.columns([1, 1])  # Разделяем пространство для двух кнопок
+
+    with col1:
+
+        if st.button("Получить триггерные артикулы за вчера-сегодня"):
+            try:
+                result = get_trigger_list(my_keys)
+
+        # Проверяем, является ли результат ошибкой (строкой)
+                if isinstance(result, str):
+                    st.error(result)  # Выводим ошибку в UI
+                    df_details, df, combined_list = None, None, None  # Устанавливаем None, чтобы избежать ошибок
+                else:
+                    df_details, df, combined_list = result
+
+                st.session_state.df_details = df_details
+                st.session_state.df = df
+                st.session_state.fig = None  # Очистка старого графика
+            except Exception as e:
+                st.error(f'error Triggers {e}')
+    
+    with col2:
+        if st.button("Таблица начислений"):
+            st.session_state.show_payments_table = True  # Флаг для отображения таблицы
 
 # Check if data is loaded
 if 'df' in st.session_state and 'df_details' in st.session_state:
