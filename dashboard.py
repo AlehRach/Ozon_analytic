@@ -59,32 +59,35 @@ if 'df' in st.session_state and 'df_details' in st.session_state:
     df = st.session_state.df
     df_details = st.session_state.df_details
 
-    st.write("### Triggered articuls")
-    st.write(df)
+    col1, col2 = st.columns([1, 2])  # col1 - для таблицы и выпадающего списка, col2 - для графика
+    with col1:
+        st.write("### Triggered articuls")
+        st.write(df)
 
-    # Dropdown to select an articul
-    articul_list = df['articul'].unique()
-    selected_articul = st.selectbox("Select an Articul", articul_list)
+        # Dropdown to select an articul
+        articul_list = df['articul'].unique()
+        selected_articul = st.selectbox("Select an Articul", articul_list)
 
-    # Filter df_details for the selected articul
-    filtered_details = df_details[df_details['articul'] == selected_articul]
+    with col2:
+        # Filter df_details for the selected articul
+        filtered_details = df_details[df_details['articul'] == selected_articul]
 
-    # Plot the line graph
-    if not filtered_details.empty:
-        st.write(f"### Stock Data for Articul: {selected_articul}")
+        # Plot the line graph
+        if not filtered_details.empty:
+            st.write(f"### Stock Data for Articul: {selected_articul}")
 
-        # Create the line graph
-        fig = px.line(filtered_details, x='Day', y='stocks_present', title=f"Stock Data for {selected_articul}")
+            # Create the line graph
+            fig = px.line(filtered_details, x='Day', y='stocks_present', title=f"Stock Data for {selected_articul}")
 
-        # Add dots for flag_stock
-        flag_stock_points = filtered_details[filtered_details['flag_stock'] == 1]
-        fig.add_scatter(x=flag_stock_points['Day'], y=flag_stock_points['stocks_present'], mode='markers', name='Распродается', marker=dict(color='red'))
-        flag_out_points = filtered_details[filtered_details['flag_out'] == 1]
-        fig.add_scatter(x=flag_out_points['Day'], y=flag_out_points['stocks_present'], mode='markers', name='Вымывается', marker=dict(color='orange'))
+            # Add dots for flag_stock
+            flag_stock_points = filtered_details[filtered_details['flag_stock'] == 1]
+            fig.add_scatter(x=flag_stock_points['Day'], y=flag_stock_points['stocks_present'], mode='markers', name='Распродается', marker=dict(color='red'))
+            flag_out_points = filtered_details[filtered_details['flag_out'] == 1]
+            fig.add_scatter(x=flag_out_points['Day'], y=flag_out_points['stocks_present'], mode='markers', name='Вымывается', marker=dict(color='orange'))
 
-        # Display the graph
-        st.plotly_chart(fig)
-    else:
-        st.warning(f"No data found for articul: {selected_articul}")
+            # Display the graph
+            st.plotly_chart(fig)
+        else:
+            st.warning(f"No data found for articul: {selected_articul}")
 else:
     st.info("Click 'Fetch and Process Data' to load the data.")
