@@ -35,7 +35,7 @@ if st.session_state.keys_entered:
 
         if st.button("Получить триггерные артикулы за вчера-сегодня"):
             try:
-                result = get_trigger_list(my_keys)
+                result = get_trigger_list(st.session_state.my_keys)
 
         # Проверяем, является ли результат ошибкой (строкой)
                 if isinstance(result, str):
