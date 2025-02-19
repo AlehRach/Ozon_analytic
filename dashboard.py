@@ -23,7 +23,7 @@ if not st.session_state.keys_entered:
         if all(my_keys.values()):  # Проверяем, что все ключи введены
             st.session_state.keys_entered = True  # Скрываем форму
             st.session_state.my_keys = my_keys  # Сохраняем ключи
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.warning("Введите все ключи!")
 
