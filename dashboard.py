@@ -4,6 +4,7 @@ import requests as re
 import plotly.express as px
 
 from Trigger_stock import get_trigger_list
+from Accruals import process_data
 
 st.set_page_config(layout="wide")
 #st.title("Ozon Data Dashboard")
@@ -53,14 +54,42 @@ if st.session_state.keys_entered:
     
     with col2:
         if st.button("Таблица начислений"):
-            st.session_state.show_payments_table = True  # Флаг для отображения таблицы
+            if "dates_entered" not in st.session_state:
+                st.session_state.dates_entered = False  # По умолчанию показываем календарь
+            if not st.session_state.dates_entered:
+                st.subheader("Выберите период")
+
+                from_date = st.date_input("Начало периода")
+                to_date = st.date_input("Конец периода")
+
+                if st.button("Подтвердить даты"):
+                    if from_date and to_date and from_date <= to_date:
+                        st.session_state.from_date = from_date.strftime("%Y-%m-%d")
+                        st.session_state.to_date = to_date.strftime("%Y-%m-%d")
+                        st.session_state.dates_entered = True  # Скрываем календарь
+                        st.rerun()
+                    else:
+                        st.warning("Выберите корректные даты!")
+            if st.session_state.dates_entered:
+                st.write(f"Выбранный период: с {st.session_state.from_date} по {st.session_state.to_date}")
+            try:
+                result = process_data(st.session_state.my_keys, st.session_state.from_date, st.session_state.to_date, curr_rate=105)
+                if isinstance(result, str):
+                    st.error(result)  # Выводим ошибку в UI
+                    df_grbt, message_list = None, None
+                else:
+                    df_grbt, message_list = result
+                st.session_state.message_list = message_list
+                st.session_state.df_grbt = df_grbt
+            except Exception as e:
+                st.error(f'error Accruals {e}')
 
 # Check if data is loaded
 if 'df' in st.session_state and 'df_details' in st.session_state:
     df = st.session_state.df
     df_details = st.session_state.df_details
 
-    col1, col2 = st.columns([1, 2])  # col1 - для таблицы и выпадающего списка, col2 - для графика
+    col1, col2 = st.columns([1.1, 1.8])  # col1 - для таблицы и выпадающего списка, col2 - для графика
     with col1:
         st.write("### Triggered articuls")
         st.write(df)
