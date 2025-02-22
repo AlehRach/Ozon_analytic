@@ -58,8 +58,8 @@ if st.session_state.keys_entered:
                 st.session_state.data_entered = False  # Инициализируем, если атрибут отсутствует
             if not st.session_state.data_entered:
                 st.subheader("Выберите период")
-                from_date = st.text_input("Дата начала периода", type="data", key='from_date')
-                to_date = st.text_input("Дата окончания периода", type="data", key='to_date')
+                from_date = st.text_input("Дата начала периода", type="string", key='from_date')
+                to_date = st.text_input("Дата окончания периода", type="string", key='to_date')
                 curr_rate = st.text_input("Текущий курс валюты", type="number", key='curr_rate')
 
                 if st.button("Сохранить данные и продолжить"):
