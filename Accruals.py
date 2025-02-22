@@ -117,6 +117,7 @@ def process_data(my_keys, d_from: str, d_to: str, curr_rate: float):
     # Переименование и реорганизация столбцов
     try:
         df_grbt = df_grbt.rename(columns={'sale_commission_r': 'комиссия_в', 'Цена1 (тек.)': 'Себестоимость'})
+        curr_rate = float(curr_rate)
         df_grbt['Себестоимость'] = df_grbt['Себестоимость'] * curr_rate
 
         columns_to_move = ['Признак ХитМП', 'Номенклатурная Группа', 'Ткань', 'Сезон', 'Себестоимость']

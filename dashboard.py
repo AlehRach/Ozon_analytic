@@ -54,52 +54,31 @@ if st.session_state.keys_entered:
   
     with col2:
         if st.button("Таблица начислений"):
-            st.subheader("Выберите период")
+            if not st.session_state.data_entered:
+                st.subheader("Выберите период")
+                from_date = st.text_input("Дата начала периода", type="data", key='from_date')
+                to_date = st.text_input("Дата окончания периода", type="data", key='to_date')
+                curr_rate = st.text_input("Текущий курс валюты", type="data", key='curr_rate')
 
-            # Инициализация переменных в session_state, если их нет
-            if "from_date" not in st.session_state:
-                st.session_state.from_date = None
-            if "to_date" not in st.session_state:
-                st.session_state.to_date = None
-            if "dates_selected" not in st.session_state:
-                st.session_state.dates_selected = False  # Управляет отображением календаря
-
-            # Временные переменные для хранения выбора (чтобы не перезаписывать session_state сразу)
-            temp_from_date = st.date_input("Начало периода", value=st.session_state.from_date)
-            temp_to_date = st.date_input("Конец периода", value=st.session_state.to_date)
-
-            # Обновляем временные переменные, но не session_state сразу
-            if temp_from_date:
-                st.session_state.temp_from_date = temp_from_date
-            if temp_to_date:
-                st.session_state.temp_to_date = temp_to_date
-
-            # Кнопка подтверждения появляется только если выбраны обе даты
-            if "temp_from_date" in st.session_state and "temp_to_date" in st.session_state:
-                if st.button("Подтвердить даты"):
-                    if st.session_state.temp_from_date <= st.session_state.temp_to_date:
-                        # Теперь сохраняем в session_state окончательно
-                        st.session_state.from_date = st.session_state.temp_from_date.strftime("%Y-%m-%d")
-                        st.session_state.to_date = st.session_state.temp_to_date.strftime("%Y-%m-%d")
-                        st.session_state.dates_selected = True  # Больше не показываем календарь
+                if st.button("Сохранить данные и продолжить"):
+                    if all(my_keys.values()):  # Проверяем, что все ключи введены
+                        st.session_state.keys_entered = True  # Скрываем форму
+                        st.session_state.my_keys = my_keys  # Сохраняем ключи
                         st.rerun()
-                    else:
-                        st.warning("Дата начала должна быть раньше даты окончания!")
-
-        # Отображаем выбранные даты после подтверждения
-        if st.session_state.get("dates_selected", False):
-            st.write(f"Выбранный период: с {st.session_state.from_date} по {st.session_state.to_date}")
-            try:
-                result = process_data(st.session_state.my_keys, st.session_state.from_date, st.session_state.to_date, curr_rate=105)
-                if isinstance(result, str):
-                    st.error(result)  # Выводим ошибку в UI
-                    df_grbt, message_list = None, None
                 else:
-                    df_grbt, message_list = result
-                st.session_state.message_list = message_list
-                st.session_state.df_grbt = df_grbt
-            except Exception as e:
-                st.error(f'error Accruals {e}')
+                    st.warning("Введите все данные!")                  
+            if st.session_state.keys_entered:
+                try:
+                    result = process_data(st.session_state.my_keys, st.session_state.from_date, st.session_state.to_date, st.session_state.curr_rate)
+                    if isinstance(result, str):
+                        st.error(result)  # Выводим ошибку в UI
+                        df_grbt, message_list = None, None
+                    else:
+                        df_grbt, message_list = result
+                    st.session_state.message_list = message_list
+                    st.session_state.df_grbt = df_grbt
+                except Exception as e:
+                    st.error(f'error Accruals {e}')
 
 # Check if data is loaded
 if 'df' in st.session_state and 'df_details' in st.session_state:
