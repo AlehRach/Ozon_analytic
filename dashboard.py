@@ -56,21 +56,39 @@ if st.session_state.keys_entered:
         if st.button("Таблица начислений"):
             st.subheader("Выберите период")
 
-            st.session_state.from_date = st.date_input("Начало периода", value=st.session_state.from_date)
-            st.session_state.to_date = st.date_input("Конец периода", value=st.session_state.to_date)
+            # Инициализация переменных в session_state, если их нет
+            if "from_date" not in st.session_state:
+                st.session_state.from_date = None
+            if "to_date" not in st.session_state:
+                st.session_state.to_date = None
+            if "dates_selected" not in st.session_state:
+                st.session_state.dates_selected = False  # Управляет отображением календаря
 
-            if st.session_state.from_date and st.session_state.to_date:
+            # Временные переменные для хранения выбора (чтобы не перезаписывать session_state сразу)
+            temp_from_date = st.date_input("Начало периода", value=st.session_state.from_date)
+            temp_to_date = st.date_input("Конец периода", value=st.session_state.to_date)
+
+            # Обновляем временные переменные, но не session_state сразу
+            if temp_from_date:
+                st.session_state.temp_from_date = temp_from_date
+            if temp_to_date:
+                st.session_state.temp_to_date = temp_to_date
+
+            # Кнопка подтверждения появляется только если выбраны обе даты
+            if "temp_from_date" in st.session_state and "temp_to_date" in st.session_state:
                 if st.button("Подтвердить даты"):
-                    if st.session_state.from_date <= st.session_state.to_date:
-                        st.session_state.from_date = st.session_state.from_date.strftime("%Y-%m-%d")
-                        st.session_state.to_date = st.session_state.to_date.strftime("%Y-%m-%d")
-                        st.session_state.dates_entered = True
+                    if st.session_state.temp_from_date <= st.session_state.temp_to_date:
+                        # Теперь сохраняем в session_state окончательно
+                        st.session_state.from_date = st.session_state.temp_from_date.strftime("%Y-%m-%d")
+                        st.session_state.to_date = st.session_state.temp_to_date.strftime("%Y-%m-%d")
+                        st.session_state.dates_selected = True  # Больше не показываем календарь
                         st.rerun()
                     else:
                         st.warning("Дата начала должна быть раньше даты окончания!")
 
-            if st.session_state.dates_entered:
-                st.write(f"Выбранный период: с {st.session_state.from_date} по {st.session_state.to_date}")
+        # Отображаем выбранные даты после подтверждения
+        if st.session_state.get("dates_selected", False):
+            st.write(f"Выбранный период: с {st.session_state.from_date} по {st.session_state.to_date}")
             try:
                 result = process_data(st.session_state.my_keys, st.session_state.from_date, st.session_state.to_date, curr_rate=105)
                 if isinstance(result, str):
