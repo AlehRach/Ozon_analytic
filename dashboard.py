@@ -62,12 +62,12 @@ if st.session_state.keys_entered:
 
                 if st.button("Сохранить данные и продолжить"):
                     if all(my_keys.values()):  # Проверяем, что все ключи введены
-                        st.session_state.keys_entered = True  # Скрываем форму
+                        st.session_state.data_entered = True  # Скрываем форму
                         st.session_state.my_keys = my_keys  # Сохраняем ключи
                         st.rerun()
                 else:
                     st.warning("Введите все данные!")                  
-            if st.session_state.keys_entered:
+            if st.session_state.data_entered:
                 try:
                     result = process_data(st.session_state.my_keys, st.session_state.from_date, st.session_state.to_date, st.session_state.curr_rate)
                     if isinstance(result, str):
