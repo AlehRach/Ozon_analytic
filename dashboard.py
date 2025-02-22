@@ -54,11 +54,13 @@ if st.session_state.keys_entered:
   
     with col2:
         if st.button("Таблица начислений"):
+            if "data_entered" not in st.session_state:
+                st.session_state.data_entered = False  # Инициализируем, если атрибут отсутствует
             if not st.session_state.data_entered:
                 st.subheader("Выберите период")
                 from_date = st.text_input("Дата начала периода", type="data", key='from_date')
                 to_date = st.text_input("Дата окончания периода", type="data", key='to_date')
-                curr_rate = st.text_input("Текущий курс валюты", type="data", key='curr_rate')
+                curr_rate = st.text_input("Текущий курс валюты", type="number", key='curr_rate')
 
                 if st.button("Сохранить данные и продолжить"):
                     if all(my_keys.values()):  # Проверяем, что все ключи введены
