@@ -12,15 +12,12 @@ from googleapiclient.http import MediaIoBaseDownload
 from google.oauth2 import service_account
 import io
 
-def process_data(my_keys, d_from: str, d_to: str, excel_path: str, output_path: str, curr_rate: float):
+def process_data(my_keys, d_from: str, d_to: str, curr_rate: float):
     """
     Основная функция для обработки данных и формирования итогового Excel-файла.
     
     :param d_from: Начало периода в формате 'YYYY-MM-DD'
     :param d_to: Конец периода в формате 'YYYY-MM-DD'
-    :param profiles: Список профилей (например, ['Gr', 'Bt'])
-    :param excel_path: Путь к исходному Excel 1C файлу для обработки
-    :param output_path: Путь для сохранения результирующего Excel файла
     :param curr_rate: Текущее значение курса валют для расчета себестоимости
     """
     google_secrets = st.secrets["google"]
