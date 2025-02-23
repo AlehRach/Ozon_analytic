@@ -59,6 +59,8 @@ if st.session_state.keys_entered:
             st.session_state.from_date = ''
         if "to_date" not in st.session_state:
             st.session_state.to_date = ''
+        if "curr_rate" not in st.session_state:
+            st.session_state.curr_rate = None
         if st.button("Таблица начислений"):
             st.session_state.data_entered = False
         if not st.session_state.data_entered:
@@ -70,15 +72,15 @@ if st.session_state.keys_entered:
             if st.button("Сохранить данные и продолжить"):
                 if from_date and to_date and curr_rate is not None:
                     st.session_state.data_entered = True  # Hide the form
-                    st.session_state.from_date = from_date
-                    st.session_state.to_date = to_date
-                    st.session_state.curr_rate = curr_rate
+                    st.session_state.saved_from_date = from_date
+                    st.session_state.saved_to_date = to_date
+                    st.session_state.saved_curr_rate = curr_rate
                     st.rerun()
             else:
                 st.warning("Введите все данные!")                  
         if st.session_state.data_entered:
             try:
-                result = process_data(st.session_state.my_keys, st.session_state.from_date, st.session_state.to_date, st.session_state.curr_rate)
+                result = process_data(st.session_state.my_keys, st.session_state.saved_from_date, st.session_state.saved_to_date, st.session_state.saved_curr_rate)
                 if isinstance(result, str):
                     st.error(result)  # Выводим ошибку в UI
                     df_grbt, message_list = None, None
