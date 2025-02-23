@@ -53,34 +53,41 @@ if st.session_state.keys_entered:
                 st.error(f'error Triggers {e}')
   
     with col2:
+        if "data_entered" not in st.session_state:
+            st.session_state.data_entered = False  # Инициализируем, если атрибут отсутствует
+        if "from_date" not in st.session_state:
+            st.session_state.from_date = ''
+        if "to_date" not in st.session_state:
+            st.session_state.to_date = ''
         if st.button("Таблица начислений"):
-            if "data_entered" not in st.session_state:
-                st.session_state.data_entered = False  # Инициализируем, если атрибут отсутствует
-            if not st.session_state.data_entered:
-                st.subheader("Выберите период")
-                from_date = st.text_input("Дата начала периода YYY-mm-dd", key='from_date')
-                to_date = st.text_input("Дата окончания периода YYY-mm-dd", key='to_date')
-                curr_rate = st.number_input("Текущий курс валюты", key='curr_rate')
+            st.session_state.data_entered = False
+        if not st.session_state.data_entered:
+            st.subheader("Выберите период")
+            from_date = st.text_input("Дата начала периода YYY-mm-dd", key='from_date')
+            to_date = st.text_input("Дата окончания периода YYY-mm-dd", key='to_date')
+            curr_rate = st.number_input("Текущий курс валюты", key='curr_rate')
 
-                if st.button("Сохранить данные и продолжить"):
-                    if all(my_keys.values()):  # Проверяем, что все ключи введены
-                        st.session_state.data_entered = True  # Скрываем форму
-                        st.session_state.my_keys = my_keys  # Сохраняем ключи
-                        st.rerun()
+            if st.button("Сохранить данные и продолжить"):
+                if from_date and to_date and curr_rate is not None:
+                    st.session_state.data_entered = True  # Hide the form
+                    st.session_state.from_date = from_date
+                    st.session_state.to_date = to_date
+                    st.session_state.curr_rate = curr_rate
+                    st.rerun()
+            else:
+                st.warning("Введите все данные!")                  
+        if st.session_state.data_entered:
+            try:
+                result = process_data(st.session_state.my_keys, st.session_state.from_date, st.session_state.to_date, st.session_state.curr_rate)
+                if isinstance(result, str):
+                    st.error(result)  # Выводим ошибку в UI
+                    df_grbt, message_list = None, None
                 else:
-                    st.warning("Введите все данные!")                  
-            if st.session_state.data_entered:
-                try:
-                    result = process_data(st.session_state.my_keys, st.session_state.from_date, st.session_state.to_date, st.session_state.curr_rate)
-                    if isinstance(result, str):
-                        st.error(result)  # Выводим ошибку в UI
-                        df_grbt, message_list = None, None
-                    else:
-                        df_grbt, message_list = result
-                    st.session_state.message_list = message_list
-                    st.session_state.df_grbt = df_grbt
-                except Exception as e:
-                    st.error(f'error Accruals {e}')
+                    df_grbt, message_list = result
+                st.session_state.message_list = message_list
+                st.session_state.df_grbt = df_grbt
+            except Exception as e:
+                st.error(f'error Accruals {e}')
 
 # Check if data is loaded
 if 'df' in st.session_state and 'df_details' in st.session_state:
