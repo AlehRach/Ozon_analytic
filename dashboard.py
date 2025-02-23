@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests as re
 import plotly.express as px
+from datetime import datetime, date
 
 from Trigger_stock import get_trigger_list
 from Accruals import process_data
@@ -11,6 +12,20 @@ st.set_page_config(layout="wide")
 # Используем session_state для управления видимостью блока ввода ключей
 if "keys_entered" not in st.session_state:
     st.session_state.keys_entered = False  # По умолчанию показываем форму
+
+# Block Initialize session state variables at the start of the script
+if "data_entered" not in st.session_state:
+    st.session_state.data_entered = True  # Инициализируем, если атрибут отсутствует
+if "from_date" not in st.session_state:
+    st.session_state.from_date = None
+if "to_date" not in st.session_state:
+    st.session_state.to_date = None
+if "curr_rate" not in st.session_state:
+    st.session_state.curr_rate = None
+if "df_grbt" not in st.session_state:
+    st.session_state.df_grbt = None
+if "message_list" not in st.session_state:
+    st.session_state.message_list = None
 # Блок ввода ключей (показывается только если keys_entered == False)
 if not st.session_state.keys_entered:
     st.subheader("Введите API-ключи Ozon")
@@ -53,18 +68,7 @@ if st.session_state.keys_entered:
                 st.error(f'error Triggers {e}')
   
     with col2:
-        if "data_entered" not in st.session_state:
-            st.session_state.data_entered = True  # Инициализируем, если атрибут отсутствует
-        if "from_date" not in st.session_state:
-            st.session_state.from_date = None
-        if "to_date" not in st.session_state:
-            st.session_state.to_date = None
-        if "curr_rate" not in st.session_state:
-            st.session_state.curr_rate = None
-        if "df_grbt" not in st.session_state:
-            st.session_state.df_grbt = None
-        if "message_list" not in st.session_state:
-            st.session_state.message_list = None
+
         if st.button("Таблица начислений"):
             st.session_state.data_entered = False
         if not st.session_state.data_entered:
