@@ -84,8 +84,9 @@ if st.session_state.keys_entered:
             st.warning("Введите все данные!")                  
         if st.session_state.data_entered:
             try:
-                result = process_data(st.session_state.my_keys, st.session_state.saved_from_date.strftime('%Y-%m-%d'),
-                                       st.session_state.saved_to_date.strftime('%Y-%m-%d'), st.session_state.saved_curr_rate)
+                from_date_str = st.session_state.saved_from_date.strftime('%Y-%m-%d')
+                to_date_str = st.session_state.saved_to_date.strftime('%Y-%m-%d')
+                result = process_data(st.session_state.my_keys, from_date_str, to_date_str, st.session_state.saved_curr_rate)
                 if isinstance(result, str):
                     st.error(result)  # Выводим ошибку в UI
                     df_grbt, message_list = None, None
