@@ -3,9 +3,46 @@ import pandas as pd
 import requests as re
 import plotly.express as px
 from datetime import datetime, date
+import io
 
 from Trigger_stock import get_trigger_list
 from Accruals import process_data
+
+# Function to create an Excel file in memory
+def create_excel_file(df_grbt, from_date, to_date, curr_rate, message_list):
+    output = io.BytesIO()  # Create a BytesIO object to store the Excel file
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        workbook = writer.book
+        worksheet = workbook.add_worksheet('Data')
+        
+        # Write metadata (period and currency rate)
+        worksheet.write('A1', 'период')
+        worksheet.write('B1', f'{from_date}_{to_date}')
+        worksheet.write('A2', 'курс')
+        worksheet.write('B2', curr_rate)
+        
+        # Write the DataFrame to Excel
+        df_grbt.to_excel(writer, sheet_name='Data', startrow=5, index=False)
+        
+        # Format the header
+        header_format = workbook.add_format({'align': 'center', 'valign': 'vcenter', 'text_wrap': True})
+        for col_num, value in enumerate(df_grbt.columns.values):
+            worksheet.write(5, col_num, value, header_format)
+        
+        # Write log messages to a separate sheet
+        log_df = pd.DataFrame(message_list, columns=['Log Messages'])
+        log_df.to_excel(writer, sheet_name='Logs', index=False)
+        
+        # Add conditional formatting (optional)
+        red_fill = workbook.add_format({'bg_color': 'red'})
+        worksheet.conditional_format('A5:O5', {'type': 'blanks', 'format': red_fill})
+        yell_fill = workbook.add_format({'bg_color': 'yellow'})
+        worksheet.conditional_format('AB5:AF5', {'type': 'blanks', 'format': yell_fill})
+        blue_fill = workbook.add_format({'bg_color': 'blue'})
+        worksheet.conditional_format('AG5:AR5', {'type': 'blanks', 'format': blue_fill})
+    
+    output.seek(0)  # Reset the stream position to the beginning
+    return output
 
 st.set_page_config(layout="wide")
 #st.title("Ozon Data Dashboard")
@@ -107,6 +144,28 @@ if st.session_state.data_entered and st.session_state.df_grbt is not None:
     st.data_editor(st.session_state.df_grbt)
     if st.session_state.message_list:
         st.write(st.session_state.message_list)
+
+    # Add a download button for Excel export
+    if st.button("Сохранить в Excel"):
+        try:
+            # Create the Excel file in memory
+            excel_file = create_excel_file(
+                st.session_state.df_grbt,
+                st.session_state.saved_from_date.strftime('%Y-%m-%d'),
+                st.session_state.saved_to_date.strftime('%Y-%m-%d'),
+                st.session_state.saved_curr_rate,
+                st.session_state.message_list
+            )
+            
+            # Offer the file for download
+            st.download_button(
+                label="Скачать Excel файл",
+                data=excel_file,
+                file_name=f"начисления_{st.session_state.saved_from_date.strftime('%Y-%m-%d')}_{st.session_state.saved_to_date.strftime('%Y-%m-%d')}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        except Exception as e:
+            st.error(f"Ошибка при создании Excel файла: {e}")
 else:
     pass
 # Check if data is loaded
