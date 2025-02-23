@@ -61,6 +61,10 @@ if st.session_state.keys_entered:
             st.session_state.to_date = ''
         if "curr_rate" not in st.session_state:
             st.session_state.curr_rate = None
+        if "df_grbt" not in st.session_state:
+            st.session_state.df_grbt = None
+        if "message_list" not in st.session_state:
+            st.session_state.message_list = None
         if st.button("Таблица начислений"):
             st.session_state.data_entered = False
         if not st.session_state.data_entered:
@@ -69,15 +73,15 @@ if st.session_state.keys_entered:
             to_date = st.text_input("Дата окончания периода YYY-mm-dd", key='to_date')
             curr_rate = st.number_input("Текущий курс валюты", key='curr_rate')
 
-            if st.button("Сохранить данные и продолжить"):
-                if from_date and to_date and curr_rate is not None:
-                    st.session_state.data_entered = True  # Hide the form
-                    st.session_state.saved_from_date = from_date
-                    st.session_state.saved_to_date = to_date
-                    st.session_state.saved_curr_rate = curr_rate
-                    st.rerun()
-            else:
-                st.warning("Введите все данные!")                  
+        if st.button("Сохранить данные и продолжить"):
+            if from_date and to_date and curr_rate is not None:
+                st.session_state.data_entered = True  # Hide the form
+                st.session_state.saved_from_date = from_date
+                st.session_state.saved_to_date = to_date
+                st.session_state.saved_curr_rate = curr_rate
+                st.rerun()
+        else:
+            st.warning("Введите все данные!")                  
         if st.session_state.data_entered:
             try:
                 result = process_data(st.session_state.my_keys, st.session_state.saved_from_date, st.session_state.saved_to_date, st.session_state.saved_curr_rate)
@@ -92,15 +96,13 @@ if st.session_state.keys_entered:
                 st.error(f'error Accruals {e}')
 
 # Block- Таблица начислений
-if 'message_list' in st.session_state and 'df_grbt' in st.session_state:
-    message_list = st.session_state.message_list
-    df_grbt = st.session_state.df_grbt
+if st.session_state.data_entered and st.session_state.df_grbt is not None:
     st.write('## Таблица начислений')
-    st.write(df_grbt)
-    st.write(message_list)
+    st.write(st.session_state.df_grbt)
+    if st.session_state.message_list:
+        st.write(st.session_state.message_list)
 else:
-    st.info('Упс нет данных')
-
+    pass
 # Check if data is loaded
 if 'df' in st.session_state and 'df_details' in st.session_state:
     df = st.session_state.df
