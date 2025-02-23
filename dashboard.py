@@ -108,35 +108,35 @@ if st.session_state.keys_entered:
 
         if st.button("Таблица начислений"):
             st.session_state.data_entered = False
-        if not st.session_state.data_entered:
-            st.subheader("Выберите период")
-            from_date = st.date_input("Дата начала периода YYY-mm-dd", key='from_date')
-            to_date = st.date_input("Дата окончания периода YYY-mm-dd", key='to_date')
-            curr_rate = st.number_input("Текущий курс валюты", key='curr_rate')
+            if not st.session_state.data_entered:
+                st.subheader("Выберите период")
+                from_date = st.date_input("Дата начала периода YYY-mm-dd", key='from_date')
+                to_date = st.date_input("Дата окончания периода YYY-mm-dd", key='to_date')
+                curr_rate = st.number_input("Текущий курс валюты", key='curr_rate')
 
-        if st.button("Сохранить данные и продолжить"):
-            if from_date and to_date and curr_rate is not None:
-                st.session_state.data_entered = True  # Hide the form
-                st.session_state.saved_from_date = from_date
-                st.session_state.saved_to_date = to_date
-                st.session_state.saved_curr_rate = curr_rate
-                st.rerun()
-        else:
-            st.warning("Введите все данные!")                  
-        if st.session_state.data_entered:
-            try:
-                from_date_str = st.session_state.saved_from_date.strftime('%Y-%m-%d')
-                to_date_str = st.session_state.saved_to_date.strftime('%Y-%m-%d')
-                result = process_data(st.session_state.my_keys, from_date_str, to_date_str, st.session_state.saved_curr_rate)
-                if isinstance(result, str):
-                    st.error(result)  # Выводим ошибку в UI
-                    df_grbt, message_list = None, None
-                else:
-                    df_grbt, message_list = result
-                st.session_state.message_list = message_list
-                st.session_state.df_grbt = df_grbt
-            except Exception as e:
-                st.error(f'error Accruals {e}')
+            if st.button("Сохранить данные и продолжить"):
+                if from_date and to_date and curr_rate is not None:
+                    st.session_state.data_entered = True  # Hide the form
+                    st.session_state.saved_from_date = from_date
+                    st.session_state.saved_to_date = to_date
+                    st.session_state.saved_curr_rate = curr_rate
+                    st.rerun()
+            else:
+                st.warning("Введите все данные!")                  
+            if st.session_state.data_entered:
+                try:
+                    from_date_str = st.session_state.saved_from_date.strftime('%Y-%m-%d')
+                    to_date_str = st.session_state.saved_to_date.strftime('%Y-%m-%d')
+                    result = process_data(st.session_state.my_keys, from_date_str, to_date_str, st.session_state.saved_curr_rate)
+                    if isinstance(result, str):
+                        st.error(result)  # Выводим ошибку в UI
+                        df_grbt, message_list = None, None
+                    else:
+                        df_grbt, message_list = result
+                    st.session_state.message_list = message_list
+                    st.session_state.df_grbt = df_grbt
+                except Exception as e:
+                    st.error(f'error Accruals {e}')
 
 # Block- Таблица начислений
 if st.session_state.data_entered and st.session_state.df_grbt is not None:
