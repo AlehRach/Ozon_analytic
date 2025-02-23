@@ -54,7 +54,7 @@ if st.session_state.keys_entered:
   
     with col2:
         if "data_entered" not in st.session_state:
-            st.session_state.data_entered = False  # Инициализируем, если атрибут отсутствует
+            st.session_state.data_entered = True  # Инициализируем, если атрибут отсутствует
         if "from_date" not in st.session_state:
             st.session_state.from_date = ''
         if "to_date" not in st.session_state:
@@ -98,7 +98,7 @@ if st.session_state.keys_entered:
 # Block- Таблица начислений
 if st.session_state.data_entered and st.session_state.df_grbt is not None:
     st.write('## Таблица начислений')
-    st.write(st.session_state.df_grbt)
+    st.data_editor(st.session_state.df_grbt)
     if st.session_state.message_list:
         st.write(st.session_state.message_list)
 else:
