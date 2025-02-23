@@ -91,6 +91,16 @@ if st.session_state.keys_entered:
             except Exception as e:
                 st.error(f'error Accruals {e}')
 
+# Block- Таблица начислений
+if 'message_list' in st.session_state and 'df_grbt' in st.session_state:
+    message_list = st.session_state.message_list
+    df_grbt = st.session_state.df_grbt
+    st.write('## Таблица начислений')
+    st.write(df_grbt)
+    st.write(message_list)
+else:
+    st.info('Упс нет данных')
+
 # Check if data is loaded
 if 'df' in st.session_state and 'df_details' in st.session_state:
     df = st.session_state.df
