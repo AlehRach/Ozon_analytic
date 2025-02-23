@@ -16,12 +16,12 @@ if "keys_entered" not in st.session_state:
 # Block Initialize session state variables at the start of the script
 if "data_entered" not in st.session_state:
     st.session_state.data_entered = True  # Инициализируем, если атрибут отсутствует
-if "from_date" not in st.session_state:
-    st.session_state.from_date = None
-if "to_date" not in st.session_state:
-    st.session_state.to_date = None
-if "curr_rate" not in st.session_state:
-    st.session_state.curr_rate = None
+if "saved_from_date" not in st.session_state:
+    st.session_state.saved_from_date = None
+if "saved_to_date" not in st.session_state:
+    st.session_state.saved_to_date = None
+if "saved_curr_rate" not in st.session_state:
+    st.session_state.saved_curr_rate = None
 if "df_grbt" not in st.session_state:
     st.session_state.df_grbt = None
 if "message_list" not in st.session_state:
