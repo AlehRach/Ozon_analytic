@@ -121,12 +121,13 @@ if st.session_state.keys_entered:
                 st.session_state.saved_to_date = to_date
                 st.session_state.saved_curr_rate = curr_rate
                 st.rerun()
-        else:
-            st.warning("Введите все данные!")                  
+            else:
+                st.warning("Введите все данные!")                  
         if st.session_state.data_entered:
             try:
                 from_date_str = st.session_state.saved_from_date.strftime('%Y-%m-%d')
                 to_date_str = st.session_state.saved_to_date.strftime('%Y-%m-%d')
+                st.write(f'start period- {from_date_str}, end- {to_date_str}, curr rate- {st.session_state.saved_curr_rate}')
                 result = process_data(st.session_state.my_keys, from_date_str, to_date_str, st.session_state.saved_curr_rate)
                 if isinstance(result, str):
                     st.error(result)  # Выводим ошибку в UI
