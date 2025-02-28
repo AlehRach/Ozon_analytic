@@ -12,6 +12,7 @@ from googleapiclient.http import MediaIoBaseDownload
 from google.oauth2 import service_account
 import io
 
+
 def process_data(my_keys, d_from: str, d_to: str, curr_rate: float):
     """
     Основная функция для обработки данных и формирования итогового Excel-файла.
@@ -159,29 +160,3 @@ def process_data(my_keys, d_from: str, d_to: str, curr_rate: float):
         return f"Ошибка Переименование и реорганизация столбцов: {e}"
     
     return df_grbt, message_list
-   
-    # Экспорт в Excel
-    # try:
-    #     log_df = pd.DataFrame(log_list, columns=['Log Messages'])
-    #     with pd.ExcelWriter(output_path, engine='xlsxwriter') as writer:
-    #         workbook = writer.book
-    #         worksheet = workbook.add_worksheet('Data')
-    #         worksheet.write('A1', 'период')
-    #         worksheet.write('B1', f'{d_from}_{d_to}')
-    #         worksheet.write('A2', 'курс')
-    #         worksheet.write('B2', curr_rate)
-    #         df_grbt.to_excel(writer, sheet_name='Data', startrow=5, index=False)
-    #         header_format = workbook.add_format({'align': 'center', 'valign': 'vcenter', 'text_wrap': True})
-    #         for col_num, value in enumerate(df_grbt.columns.values):
-    #             worksheet.write(5, col_num, value, header_format)
-    #         log_df.to_excel(writer, sheet_name='Logs', index=False)
-    #         red_fill = workbook.add_format({'bg_color': 'red'})
-    #         worksheet.conditional_format('A5:O5', {'type': 'blanks', 'format': red_fill})
-    #         yell_fill = workbook.add_format({'bg_color': 'yellow'})
-    #         worksheet.conditional_format('AB5:AF5', {'type': 'blanks', 'format': yell_fill})
-    #         blue_fill = workbook.add_format({'bg_color': 'blue'})
-    #         worksheet.conditional_format('AG5:AR5', {'type': 'blanks', 'format': blue_fill})
-
-    #     print(f"Данные успешно сохранены в файл: {output_path}")
-    # except Exception as e:
-    #     return f"Ошибка при сохранении данных в Excel: {e}"

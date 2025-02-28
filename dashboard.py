@@ -7,6 +7,7 @@ import io
 
 from Trigger_stock import get_trigger_list
 from Accruals import process_data
+from Googlestream import df_to_googlesheet
 
 # Function to create an Excel file in memory
 def create_excel_file(df_grbt, from_date, to_date, curr_rate, message_list):
@@ -147,28 +148,15 @@ if st.session_state.data_entered and st.session_state.df_grbt is not None:
         st.write(st.session_state.message_list)
 
     # Add a download button for Excel export
-    if st.button("Сохранить в Excel"):
+    if st.button("Сохранить в Google Sheets"):
         try:
-            # Create the Excel file in memory
-            excel_file = create_excel_file(
-                st.session_state.df_grbt,
-                st.session_state.saved_from_date.strftime('%Y-%m-%d'),
-                st.session_state.saved_to_date.strftime('%Y-%m-%d'),
-                st.session_state.saved_curr_rate,
-                st.session_state.message_list
-            )
-            
-            # Offer the file for download
-            st.download_button(
-                label="Скачать Excel файл",
-                data=excel_file,
-                file_name=f"начисления_{st.session_state.saved_from_date.strftime('%Y-%m-%d')}_{st.session_state.saved_to_date.strftime('%Y-%m-%d')}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+            # Create the Google Sheets in memory
+            df_to_googlesheet(df_grbt, message_list, from_date_str, to_date_str)
         except Exception as e:
-            st.error(f"Ошибка при создании Excel файла: {e}")
+            st.error(f"Ошибка при создании Google Sheets: {e}")
 else:
     pass
+
 # Check if data is loaded
 if 'df' in st.session_state and 'df_details' in st.session_state:
     df = st.session_state.df
