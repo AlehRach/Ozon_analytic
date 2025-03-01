@@ -1,6 +1,7 @@
 import streamlit as st
 import gspread
 from google.oauth2 import service_account
+from googleapiclient.discovery import build
 import pandas as pd
 
 def df_to_googlesheet(df, message_list, d_from, d_to):
@@ -19,7 +20,7 @@ def df_to_googlesheet(df, message_list, d_from, d_to):
     spreadsheet = client.create(spreadsheet_name)
 
     folder_id = '15LLtt1Ae3lI_JpxIvrIF'
-    drive_service = client.auth.service
+    drive_service = build('drive', 'v3', credentials=credentials)
     drive_service.files().update(fileId=spreadsheet.id, addParents=folder_id, removeParents='root').execute()
 
     # Доступ для коллег (добавь их email)
