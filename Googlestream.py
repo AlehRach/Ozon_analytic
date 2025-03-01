@@ -6,7 +6,7 @@ import pandas as pd
 
 def df_to_googlesheet(df, message_list, d_from, d_to):
     df = df.fillna(0)  # Replace NaN with 0
-
+    message_list = [msg if pd.notna(msg) else "" for msg in message_list]
     google_secrets = st.secrets["google"]
 
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
