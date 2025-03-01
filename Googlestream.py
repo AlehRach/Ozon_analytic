@@ -21,6 +21,8 @@ def df_to_googlesheet(df, message_list, d_from, d_to):
 
     folder_id = '15LLtt1Ae3lI_JpxIvrIF-rhJXe6-_ohB'
     drive_service = build('drive', 'v3', credentials=credentials)
+    response = drive_service.files().list(q=f"'{folder_id}' in parents").execute()
+    st.write("Files in folder:", response.get('files', []))
     drive_service.files().update(fileId=spreadsheet.id, addParents=folder_id, removeParents='root').execute()
 
     # Доступ для коллег (добавь их email)
