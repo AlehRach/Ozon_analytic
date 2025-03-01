@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 import pandas as pd
 
 def df_to_googlesheet(df, message_list, d_from, d_to):
+    df = df.fillna(0)  # Replace NaN with 0
 
     google_secrets = st.secrets["google"]
 
