@@ -19,7 +19,7 @@ def df_to_googlesheet(df, message_list, d_from, d_to):
     spreadsheet_name = f'Начисления_{d_from}_{d_to}'
     spreadsheet = client.create(spreadsheet_name)
 
-    folder_id = '15LLtt1Ae3lI_JpxIvrIF'
+    folder_id = '15LLtt1Ae3lI_JpxIvrIF-rhJXe6-_ohB'
     drive_service = build('drive', 'v3', credentials=credentials)
     drive_service.files().update(fileId=spreadsheet.id, addParents=folder_id, removeParents='root').execute()
 
