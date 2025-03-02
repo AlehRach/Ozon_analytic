@@ -6,7 +6,7 @@ import pandas as pd
 
 def df_to_googlesheet(df, message_list, d_from, d_to):
     df = df.fillna(0)  # Replace NaN with 0
-    message_list = [msg if pd.notna(msg) else "" for msg in message_list]
+    #message_list = [msg if pd.notna(msg) else "" for msg in message_list]
     google_secrets = st.secrets["google"]
 
     SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
@@ -33,11 +33,11 @@ def df_to_googlesheet(df, message_list, d_from, d_to):
     sheet = spreadsheet.sheet1
     sheet.update([df.columns.values.tolist()] + df.values.tolist())
     
-    try:
-        details_sheet = spreadsheet.worksheet('Изменения')
-    except gspread.WorksheetNotFound:
-        details_sheet = spreadsheet.add_worksheet(title='Изменения', rows=100, cols=20)
-    details_sheet.update('A1', [[msg] for msg in message_list])
+    # try:
+    #     details_sheet = spreadsheet.worksheet('Изменения')
+    # except gspread.WorksheetNotFound:
+    #     details_sheet = spreadsheet.add_worksheet(title='Изменения', rows=100, cols=20)
+    # details_sheet.update('A1', [[msg] for msg in message_list])
     st.write(f"Данные успешно загружены в Google Sheets: [Открыть таблицу]({spreadsheet.url})")
 
     
