@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import pandas as pd
 
-def df_to_googlesheet(df, message_list, d_from, d_to):
+def df_to_googlesheet(df, d_from, d_to, table_type):
     df = df.fillna(0)  # Replace NaN with 0
     #message_list = [msg if pd.notna(msg) else "" for msg in message_list]
     google_secrets = st.secrets["google"]
@@ -17,18 +17,24 @@ def df_to_googlesheet(df, message_list, d_from, d_to):
     client = gspread.authorize(credentials)
 
     # Название таблицы
-    spreadsheet_name = f'Начисления_{d_from}_{d_to}'
+    if table_type == 'accr':
+        spreadsheet_name = f'Начисления_{d_from}_{d_to}'
+    elif table_type == 'actions':
+        spreadsheet_name = f'Акции_{d_from}'
+    else:
+        spreadsheet_name = 'Table'
     spreadsheet = client.create(spreadsheet_name)
 
     folder_id = '15LLtt1Ae3lI_JpxIvrIF-rhJXe6-_ohB'
     drive_service = build('drive', 'v3', credentials=credentials)
-    response = drive_service.files().list(q=f"'{folder_id}' in parents").execute()
-    st.write("Files in folder:", response.get('files', []))
+    #response = drive_service.files().list(q=f"'{folder_id}' in parents").execute()
+    #st.write("Files in folder:", response.get('files', []))
     drive_service.files().update(fileId=spreadsheet.id, addParents=folder_id, removeParents='root').execute()
 
     # Доступ для коллег (добавь их email)
     spreadsheet.share('Marandsor@gmail.com', perm_type='user', role='writer')
     spreadsheet.share('tchingalaev@gmail.com', perm_type='user', role='writer')
+    spreadsheet.share('olga.shybut84@gmail.ru', perm_type='user', role='writer')
 
     sheet = spreadsheet.sheet1
     sheet.update([df.columns.values.tolist()] + df.values.tolist())
