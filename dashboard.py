@@ -131,7 +131,7 @@ if st.session_state.df_action is not None:
             current_date = datetime.now().date()
             from_date_str = current_date.strftime("%Y-%m-%d")
             to_date_str = None
-            df_to_googlesheet(df_action, from_date_str, to_date_str, table_type)
+            df_to_googlesheet(st.session_state.df_action, from_date_str, to_date_str, table_type)
         except Exception as e:
             st.error(f"Ошибка при создании Google Sheets: {e}")
 else:
