@@ -29,6 +29,9 @@ if "df_grbt" not in st.session_state:
     st.session_state.df_grbt = None
 if "message_list" not in st.session_state:
     st.session_state.message_list = None
+if "df_action" not in st.session_state:
+    st.session_state.df_action = None
+
 # Блок ввода ключей (показывается только если keys_entered == False)
 if not st.session_state.keys_entered:
     st.subheader("Введите API-ключи Ozon")
@@ -128,7 +131,7 @@ if st.session_state.df_action is not None:
             current_date = datetime.now().date()
             from_date_str = current_date.strftime("%Y-%m-%d")
             to_date_str = None
-            df_to_googlesheet(df_grbt, from_date_str, to_date_str, table_type)
+            df_to_googlesheet(df_action, from_date_str, to_date_str, table_type)
         except Exception as e:
             st.error(f"Ошибка при создании Google Sheets: {e}")
 else:
