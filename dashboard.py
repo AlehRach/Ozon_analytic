@@ -8,42 +8,7 @@ import io
 from Trigger_stock import get_trigger_list
 from Accruals import process_data
 from Googlestream import df_to_googlesheet
-
-# Function to create an Excel file in memory
-def create_excel_file(df_grbt, from_date, to_date, curr_rate, message_list):
-    output = io.BytesIO()  # Create a BytesIO object to store the Excel file
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        workbook = writer.book
-        worksheet = workbook.add_worksheet('Data')
-        
-        # Write metadata (period and currency rate)
-        worksheet.write('A1', 'период')
-        worksheet.write('B1', f'{from_date}_{to_date}')
-        worksheet.write('A2', 'курс')
-        worksheet.write('B2', curr_rate)
-        
-        # Write the DataFrame to Excel
-        df_grbt.to_excel(writer, sheet_name='Data', startrow=5, index=False)
-        
-        # Format the header
-        header_format = workbook.add_format({'align': 'center', 'valign': 'vcenter', 'text_wrap': True})
-        for col_num, value in enumerate(df_grbt.columns.values):
-            worksheet.write(5, col_num, value, header_format)
-        
-        # Write log messages to a separate sheet
-        log_df = pd.DataFrame(message_list, columns=['Log Messages'])
-        log_df.to_excel(writer, sheet_name='Logs', index=False)
-        
-        # Add conditional formatting (optional)
-        red_fill = workbook.add_format({'bg_color': 'red'})
-        worksheet.conditional_format('A5:O5', {'type': 'blanks', 'format': red_fill})
-        yell_fill = workbook.add_format({'bg_color': 'yellow'})
-        worksheet.conditional_format('AB5:AF5', {'type': 'blanks', 'format': yell_fill})
-        blue_fill = workbook.add_format({'bg_color': 'blue'})
-        worksheet.conditional_format('AG5:AR5', {'type': 'blanks', 'format': blue_fill})
-    
-    output.seek(0)  # Reset the stream position to the beginning
-    return output
+from Actions import get_actions
 
 st.set_page_config(layout="wide")
 #st.title("Ozon Data Dashboard")
@@ -84,7 +49,7 @@ if not st.session_state.keys_entered:
 
 # Если ключи введены, показываем основную часть дашборда
 if st.session_state.keys_entered:
-    col1, col2 = st.columns([1, 1])  # Разделяем пространство для двух кнопок
+    col1, col2, col3 = st.columns([1, 1, 1])  # Разделяем пространство для двух кнопок
 
     with col1:
 
@@ -140,6 +105,37 @@ if st.session_state.keys_entered:
             except Exception as e:
                 st.error(f'error Accruals {e}')
 
+    with col3:
+        if st.button("Получить акции"):
+            try:
+                result = get_actions(st.session_state.my_keys)
+                if isinstance(result, str):
+                    st.error(result)
+                    df_action = None
+                else:
+                    df_action = result
+                st.session_state.df_action = df_action
+            except Exception as e:
+                st.error(f'error Получить акции {e}')
+
+# Block - Получить акции
+if st.session_state.df_action is not None:
+    st.write('## акции')
+    st.data_editor(st.session_state.df_action)
+    if st.button("Сохранить в Google Sheets"):
+        try:
+            table_type = 'actions'
+            current_date = datetime.now().date()
+            from_date_str = current_date.strftime("%Y-%m-%d")
+            to_date_str = None
+            df_to_googlesheet(df_grbt, from_date_str, to_date_str, table_type)
+        except Exception as e:
+            st.error(f"Ошибка при создании Google Sheets: {e}")
+else:
+    pass
+
+
+
 # Block- Таблица начислений
 if st.session_state.data_entered and st.session_state.df_grbt is not None:
     st.write('## Таблица начислений')
@@ -151,7 +147,8 @@ if st.session_state.data_entered and st.session_state.df_grbt is not None:
     if st.button("Сохранить в Google Sheets"):
         try:
             # Create the Google Sheets in memory
-            df_to_googlesheet(df_grbt, message_list, from_date_str, to_date_str)
+            table_type = 'accr'
+            df_to_googlesheet(df_grbt, from_date_str, to_date_str, table_type)
         except Exception as e:
             st.error(f"Ошибка при создании Google Sheets: {e}")
 else:

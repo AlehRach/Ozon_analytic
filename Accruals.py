@@ -26,8 +26,8 @@ def process_data(my_keys, d_from: str, d_to: str, curr_rate: float):
     SCOPES = ["https://www.googleapis.com/auth/drive"]
 
     credentials = service_account.Credentials.from_service_account_info(
-        dict(google_secrets), scopes=SCOPES
-    )
+        dict(google_secrets), scopes=SCOPES)
+    
     drive_service = build("drive", "v3", credentials=credentials)
     FOLDER_ID = '1RdrpiKMbhNacsrs6kZCxpsSwphbzhUW7'
     # 🔹 Функция получения списка файлов в папке Google Drive
