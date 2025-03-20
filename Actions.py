@@ -90,7 +90,17 @@ def get_actions(my_keys):
             
             new_order = [15, 7, 8, 9, 10, 0, 12, 13, 11, 1, 2, 3, 4, 5, 6, 14]
             combined_df = combined_df.iloc[:, new_order]
-            df_list.append(combined_df)
+
+            list_id = combined_df['id'].unique()
+            df_goods_ex = df_goods[~df_goods['id'].isin(list_id)].copy()
+            df_goods_ex['В_акции'] = 'список_товаров'
+            df_goods_ex['price'] = df_goods_ex['price'].fillna(0)
+            df_goods_ex['price'] = pd.to_numeric(df_goods_ex['price'], errors='coerce')
+            df_goods_ex['price'] = df_goods_ex['price'].astype(int)
+            df_goods_ex['Кабинет'] = profile
+            combined_full_df = pd.concat([combined_df, df_goods_ex[['id', 'offer_id', 'name', 'stocks_present',  'price','В_акции', 'Кабинет']]])
+
+            df_list.append(combined_full_df)
         except Exception as e:
             return f'error transforming actions df {e}'
 
