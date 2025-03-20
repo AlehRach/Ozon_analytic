@@ -27,7 +27,7 @@ def get_actions(my_keys):
         url_actioncands = 'https://api-seller.ozon.ru/v1/actions/candidates'
         url_executegoods = 'https://api-seller.ozon.ru/v1/actions/products'
         
-        def get_actions(headers, url):
+        def get_actions_data(headers, url, df_actionlist):
 
             action_goods = []
 
@@ -57,7 +57,7 @@ def get_actions(my_keys):
 
              
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_candsaction = executor.submit(get_actions, headers, url_actioncands)
+            future_candsaction = executor.submit(get_actions_data, headers, url_actioncands, df_actionlist)
 
             result = get_all_goods(client_id, api_key, profile)
             if isinstance(result, str):
@@ -66,7 +66,7 @@ def get_actions(my_keys):
             else:
                 df_goods = result
 
-            result = get_actions(headers, url_executegoods)
+            result = get_actions_data(headers, url_executegoods, df_actionlist)
             if isinstance(result, str):
                 return result
                 df_inaction = None  # Устанавливаем None, чтобы избежать ошибок
