@@ -36,7 +36,7 @@ def get_actions(my_keys):
                 while True:
                     try:
                         params = {'action_id': int(action_id), 'limit': 100, 'offset': offset}
-                        res = re.post(url_actioncands, headers=headers, json=params)
+                        res = re.post(url, headers=headers, json=params)
                         res.raise_for_status()
                         action = res.json()['result']['products']
 
